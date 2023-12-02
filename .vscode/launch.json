@@ -13,7 +13,8 @@
                 "args": [
                     "test",
                     "--no-run",
-                    "--lib"
+                    "--bin",
+                    "part1",
                 ]
             },
             "args": []
