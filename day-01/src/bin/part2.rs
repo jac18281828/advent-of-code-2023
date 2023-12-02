@@ -1,62 +1,47 @@
 use std::io::{self, Error};
-
-fn starts_with_number_word(s: &String) -> bool {
-    if s.starts_with("zero")
-        || s.starts_with("one")
-        || s.starts_with("two")
-        || s.starts_with("three")
-        || s.starts_with("four")
-        || s.starts_with("five")
-        || s.starts_with("six")
-        || s.starts_with("seven")
-        || s.starts_with("eight")
-        || s.starts_with("nine")
-    {
-        true
-    } else {
-        false
-    }
-}
-
-fn findfirstnumberorword(s: &String) -> Option<usize> {
-    for (i, c) in s.char_indices() {
-        if char::is_numeric(c) {
-            return Some(i);
-        }
-        let word = s[i..].to_string();
-        if starts_with_number_word(&word.to_string()) {
-            return Some(i);
-        }
-    }
-    None
-}
-
-fn findlastnumberorword(s: &String) -> Option<usize> {
-    for (i, c) in s.char_indices().rev() {
-        if char::is_numeric(c) {
-            return Some(i);
-        }
-        let word = s[i..].to_string();
-        if starts_with_number_word(&word.to_string()) {
-            return Some(i);
-        }
-    }
-    None
-}
+use tracing;
 
 fn decode(input: &String) -> Result<i32, Error> {
-    let firstnumber = input.find(char::is_numeric);
-    let lastnumber = input.rfind(char::is_numeric);
-    if firstnumber.is_none() || lastnumber.is_none() {
+    let mut number_tokens = vec![];
+    let mut i = 0;
+    tracing::debug!("{}", input);
+    while i < input.len() {
+        if char::is_numeric(input.chars().nth(i).unwrap()) {
+            let n = input[i..i + 1].parse::<i32>().unwrap();
+            number_tokens.push(n);
+        } else if input[i..].starts_with("zero") {
+            number_tokens.push(0);
+        } else if input[i..].starts_with("one") {
+            number_tokens.push(1);
+        } else if input[i..].starts_with("two") {
+            number_tokens.push(2);
+        } else if input[i..].starts_with("three") {
+            number_tokens.push(3);
+        } else if input[i..].starts_with("four") {
+            number_tokens.push(4);
+        } else if input[i..].starts_with("five") {
+            number_tokens.push(5);
+        } else if input[i..].starts_with("six") {
+            number_tokens.push(6);
+        } else if input[i..].starts_with("seven") {
+            number_tokens.push(7);
+        } else if input[i..].starts_with("eight") {
+            number_tokens.push(8);
+        } else if input[i..].starts_with("nine") {
+            number_tokens.push(9);
+        }
+        i += 1;
+    }
+
+    if number_tokens.is_empty() {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
             format!("No numbers found: {}", input),
         ));
     }
-    let firstnumber = firstnumber.unwrap();
-    let lastnumber = lastnumber.unwrap();
-    let n1 = input[firstnumber..firstnumber + 1].parse::<i32>().unwrap();
-    let n2 = input[lastnumber..lastnumber + 1].parse::<i32>().unwrap();
+    tracing::debug!("{:?}", number_tokens);
+    let n1 = number_tokens[0];
+    let n2 = number_tokens[number_tokens.len() - 1];
     Ok(n1 * 10 + n2)
 }
 
@@ -104,26 +89,118 @@ mod tests {
     }
 
     #[test]
-    fn test_find_first_number_word() {
-        let s1 = "two1nine".to_string();
-        assert!(findfirstnumberorword(&s1).unwrap() == 0);
+    fn test_decode6() {
+        let s1 = "zero";
+        assert!(decode(&s1.to_string()).unwrap() == 0);
     }
 
     #[test]
-    fn test_find_first_number_word2() {
-        let s1 = "to1nine".to_string();
-        assert!(findfirstnumberorword(&s1).unwrap() == 2);
+    fn test_decode7() {
+        let s1 = "one";
+        assert!(decode(&s1.to_string()).unwrap() == 11);
     }
 
     #[test]
-    fn test_find_last_number_word() {
-        let s1 = "two1nine".to_string();
-        assert!(findlastnumberorword(&s1).unwrap() == 4);
+    fn test_decode8() {
+        let s1 = "two";
+        assert!(decode(&s1.to_string()).unwrap() == 22);
     }
 
     #[test]
-    fn test_find_last_number_word2() {
-        let s1 = "two1nne".to_string();
-        assert!(findlastnumberorword(&s1).unwrap() == 3);
+    fn test_decode9() {
+        let s1 = "three";
+        assert!(decode(&s1.to_string()).unwrap() == 33);
+    }
+
+    #[test]
+    fn test_decode10() {
+        let s1 = "four";
+        assert!(decode(&s1.to_string()).unwrap() == 44);
+    }
+
+    #[test]
+    fn test_decode11() {
+        let s1 = "five";
+        assert!(decode(&s1.to_string()).unwrap() == 55);
+    }
+
+    #[test]
+    fn test_decode12() {
+        let s1 = "six";
+        assert!(decode(&s1.to_string()).unwrap() == 66);
+    }
+
+    #[test]
+    fn test_decode13() {
+        let s1 = "seven";
+        assert!(decode(&s1.to_string()).unwrap() == 77);
+    }
+
+    #[test]
+    fn test_decode14() {
+        let s1 = "eight";
+        assert!(decode(&s1.to_string()).unwrap() == 88);
+    }
+
+    #[test]
+    fn test_decode15() {
+        let s1 = "nine";
+        assert!(decode(&s1.to_string()).unwrap() == 99);
+    }
+
+    #[test]
+    fn test_decode16() {
+        let s1 = "zerozero";
+        assert!(decode(&s1.to_string()).unwrap() == 0);
+    }
+
+    #[test]
+    fn test_decode17() {
+        let s1 = "onetwo";
+        assert!(decode(&s1.to_string()).unwrap() == 12);
+    }
+
+    #[test]
+    fn test_decode18() {
+        let s1 = "twoaone";
+        assert!(decode(&s1.to_string()).unwrap() == 21);
+    }
+
+    #[test]
+    fn test_decode19() {
+        let s1 = "athreebfourc";
+        assert!(decode(&s1.to_string()).unwrap() == 34);
+    }
+
+    #[test]
+    fn test_decode20() {
+        let s1 = "athreebfourc1";
+        assert!(decode(&s1.to_string()).unwrap() == 31);
+    }
+
+    #[test]
+    fn test_decode21() {
+        let words = vec![
+            "two1nine",
+            "eightwothree",
+            "abcone2threexyz",
+            "xtwone3four",
+            "4nineeightseven2",
+            "zoneight234",
+            "7pqrstsixteen",
+        ];
+        let expect = 281;
+        let result = words
+            .iter()
+            .map(|line| line.to_string())
+            .map(|line| decode(&line).unwrap())
+            .sum::<i32>();
+        assert_eq!(result, expect);
+    }
+
+    #[test]
+    fn test_allowoverlapinwords() {
+        let s1 = "ninesevensrzxkzpmgz8kcjxsbdftwoner";
+        assert_eq!(decode(&s1.to_string()).unwrap(), 91);
     }
 }

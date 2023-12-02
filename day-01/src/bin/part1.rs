@@ -58,4 +58,16 @@ mod tests {
         let s1 = "trebuchet";
         assert!(decode(&s1.to_string()).is_err());
     }
+
+    #[test]
+    fn test_decode7() {
+        let words = vec!["1abc2", "pqr3stu8vwx", "a1b2c3d4e5f", "treb7uchet"];
+        let expect = 142;
+        let result = words
+            .iter()
+            .map(|line| line.to_string())
+            .map(|line| decode(&line).unwrap())
+            .sum::<i32>();
+        assert_eq!(result, expect);
+    }
 }
