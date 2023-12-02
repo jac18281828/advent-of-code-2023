@@ -4,16 +4,19 @@ fn decode(input: &String) -> Result<i32, Error> {
     let firstnumber = input.find(char::is_numeric);
     let lastnumber = input.rfind(char::is_numeric);
     if firstnumber.is_none() || lastnumber.is_none() {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, format!("No numbers found: {}", input)));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            format!("No numbers found: {}", input),
+        ));
     }
     let firstnumber = firstnumber.unwrap();
     let lastnumber = lastnumber.unwrap();
-    let n1 = input[firstnumber..firstnumber+1].parse::<i32>().unwrap();
-    let n2 = input[lastnumber..lastnumber+1].parse::<i32>().unwrap();
+    let n1 = input[firstnumber..firstnumber + 1].parse::<i32>().unwrap();
+    let n2 = input[lastnumber..lastnumber + 1].parse::<i32>().unwrap();
     Ok(n1 * 10 + n2)
 }
 
-fn main() -> Result<(), Error>{
+fn main() -> Result<(), Error> {
     let sum = io::stdin()
         .lines()
         .map(|line| decode(&line.unwrap()).unwrap())

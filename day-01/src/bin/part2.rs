@@ -1,7 +1,7 @@
 use std::io::{self, Error};
 
 fn starts_with_number_word(s: &String) -> bool {
-    if s.starts_with("zero") 
+    if s.starts_with("zero")
         || s.starts_with("one")
         || s.starts_with("two")
         || s.starts_with("three")
@@ -10,10 +10,10 @@ fn starts_with_number_word(s: &String) -> bool {
         || s.starts_with("six")
         || s.starts_with("seven")
         || s.starts_with("eight")
-        || s.starts_with("nine") {
-            true
-        }
-    else {
+        || s.starts_with("nine")
+    {
+        true
+    } else {
         false
     }
 }
@@ -33,7 +33,7 @@ fn findfirstnumberorword(s: &String) -> Option<usize> {
 
 fn findlastnumberorword(s: &String) -> Option<usize> {
     for (i, c) in s.char_indices().rev() {
-        if char::is_numeric(c)  {
+        if char::is_numeric(c) {
             return Some(i);
         }
         let word = s[i..].to_string();
@@ -48,16 +48,19 @@ fn decode(input: &String) -> Result<i32, Error> {
     let firstnumber = input.find(char::is_numeric);
     let lastnumber = input.rfind(char::is_numeric);
     if firstnumber.is_none() || lastnumber.is_none() {
-        return Err(io::Error::new(io::ErrorKind::InvalidInput, format!("No numbers found: {}", input)));
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidInput,
+            format!("No numbers found: {}", input),
+        ));
     }
     let firstnumber = firstnumber.unwrap();
     let lastnumber = lastnumber.unwrap();
-    let n1 = input[firstnumber..firstnumber+1].parse::<i32>().unwrap();
-    let n2 = input[lastnumber..lastnumber+1].parse::<i32>().unwrap();
+    let n1 = input[firstnumber..firstnumber + 1].parse::<i32>().unwrap();
+    let n2 = input[lastnumber..lastnumber + 1].parse::<i32>().unwrap();
     Ok(n1 * 10 + n2)
 }
 
-fn main() -> Result<(), Error>{
+fn main() -> Result<(), Error> {
     let sum = io::stdin()
         .lines()
         .map(|line| decode(&line.unwrap()).unwrap())
@@ -106,13 +109,11 @@ mod tests {
         assert!(findfirstnumberorword(&s1).unwrap() == 0);
     }
 
-
     #[test]
     fn test_find_first_number_word2() {
         let s1 = "to1nine".to_string();
         assert!(findfirstnumberorword(&s1).unwrap() == 2);
     }
-
 
     #[test]
     fn test_find_last_number_word() {
@@ -120,12 +121,9 @@ mod tests {
         assert!(findlastnumberorword(&s1).unwrap() == 4);
     }
 
-
     #[test]
     fn test_find_last_number_word2() {
         let s1 = "two1nne".to_string();
         assert!(findlastnumberorword(&s1).unwrap() == 3);
     }
-
-
 }
