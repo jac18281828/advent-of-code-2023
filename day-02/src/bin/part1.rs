@@ -160,6 +160,21 @@ mod tests {
     }
 
     #[test]
+    fn test_sum_not_possible_games() {
+        let game = CubeGame {
+            red: 0,
+            green: 0,
+            blue: 0,
+        };
+        let lines = vec![
+            String::from("Game 1: 1 red, 2 green, 3 blue; 2 red, 3 green, 4 blue"),
+            String::from("Game 2: 2 red, 3 green, 2 blue; 1 red, 2 green, 3 blue"),
+        ];
+        let sum = sum_possible_games(lines, &game).unwrap();
+        assert_eq!(sum, 0);
+    }
+
+    #[test]
     fn test_sum_possible_games_example() {
         let game = CubeGame {
             red: 12,

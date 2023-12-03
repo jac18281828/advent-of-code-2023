@@ -8,7 +8,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Cargo test",
-            "cwd": "${workspaceFolder}/day-01",
+            "cwd": "${workspaceFolder}/day-03",
             "cargo": {
                 "args": [
                     "test",
