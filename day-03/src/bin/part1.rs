@@ -37,13 +37,24 @@ fn parse_part_number(character_map: &Vec<String>) -> Result<Vec<PartNumber>, Err
                 }
             }
         }
+        if parse_number {
+            end = line.len();
+            let number = line[start..end].parse::<u32>()?;
+            result.push(PartNumber {
+                number: number,
+                width: end as u32 - start as u32,
+                row: n as u32,
+                column: start as u32,
+            });
+            parse_number = false;
+        }
     }
     Ok(result)
 }
 
 fn is_symbol(c: char) -> bool {
-    c == '*' || c == '#' || c == '$' || c == '+'
-}
+    c != '.' && c.is_ascii_graphic() && !c.is_digit(10)
+ }
 
 fn is_next_to_symbol(character_map: &Vec<String>, part_number: &PartNumber) -> bool {
     let mut result = false;
@@ -70,11 +81,12 @@ fn is_next_to_symbol(character_map: &Vec<String>, part_number: &PartNumber) -> b
     };
     while row < endrow {
         while col <= endcol {
-            if is_symbol(character_map[row as usize]
-                .chars()
-                .nth(col as usize)
-                .unwrap())
-            {
+            if is_symbol(
+                character_map[row as usize]
+                    .chars()
+                    .nth(col as usize)
+                    .unwrap(),
+            ) {
                 result = true;
                 break;
             }
@@ -303,4 +315,15 @@ mod tests {
         let expect = 4361;
         assert_eq!(sum_partnumber(&exa).unwrap(), expect);
     }
+
+    #[test]
+    fn test_sum_possible_last_char_num() {
+        let exa = vec![
+            String::from("..........................*..889*....89............675..........%.......29..427...................508..&........&...641..................455"),
+            String::from("..........897...960......403.....971...*......806.....@.363................*......9+..............*.....464...................586....282*..."),
+        ];
+        let expect = 5201;
+        assert_eq!(sum_partnumber(&exa).unwrap(), expect);
+    }
+
 }
