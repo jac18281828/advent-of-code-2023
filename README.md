@@ -18,3 +18,4 @@ I'm using the basic setup as described in [How to set up Rust for Advent of Code
 1. input answer 438353
 2. input answer 551221
 3. fixed bug 545251
+- correct answer is 536202 
