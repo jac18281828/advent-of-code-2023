@@ -53,8 +53,8 @@ fn parse_part_number(character_map: &Vec<String>) -> Result<Vec<PartNumber>, Err
 }
 
 fn is_symbol(c: char) -> bool {
-    c != '.' && c.is_ascii_graphic() && !c.is_digit(10)
- }
+    c != '.' && !c.is_digit(10)
+}
 
 fn is_next_to_symbol(character_map: &Vec<String>, part_number: &PartNumber) -> bool {
     let mut result = false;
@@ -73,14 +73,14 @@ fn is_next_to_symbol(character_map: &Vec<String>, part_number: &PartNumber) -> b
     } else {
         part_number.row + 3
     };
-    let endcol = if part_number.column + part_number.width + 1 >= character_map[0].len() as u32 - 1
+    let endcol = if part_number.column + part_number.width + 1 >= character_map[0].len() as u32
     {
-        character_map[0].len() as u32 - 1
+        character_map[0].len() as u32
     } else {
         part_number.column + part_number.width + 1
     };
     while row < endrow {
-        while col <= endcol {
+        while col < endcol {
             if is_symbol(
                 character_map[row as usize]
                     .chars()
@@ -109,7 +109,9 @@ fn sum_partnumber(character_map: &Vec<String>) -> Result<u32, Error> {
     let sum = parse_part_number(character_map)?
         .iter()
         .map(|n| {
+            tracing::debug!("part number: {:?}", n);
             if is_next_to_symbol(character_map, n) {
+                tracing::debug!("part number: {}", n.number);
                 n.number
             } else {
                 0
@@ -121,7 +123,7 @@ fn sum_partnumber(character_map: &Vec<String>) -> Result<u32, Error> {
 
 fn main() -> Result<(), Error> {
     tracing_subscriber::fmt()
-        .with_max_level(Level::DEBUG)
+        .with_max_level(Level::INFO)
         .init();
     let character_map: Vec<String> = io::stdin()
         .lines()
@@ -180,7 +182,7 @@ mod tests {
             number: 467,
             width: 3,
             row: 1,
-            column: 0,
+            column: 1,
         };
         assert!(is_next_to_symbol(&s1, &p1));
     }
@@ -192,7 +194,7 @@ mod tests {
             number: 467,
             width: 3,
             row: 1,
-            column: 0,
+            column: 1,
         };
         assert!(is_next_to_symbol(&s1, &p1));
     }
@@ -204,7 +206,7 @@ mod tests {
             number: 467,
             width: 3,
             row: 1,
-            column: 0,
+            column: 1,
         };
         assert!(is_next_to_symbol(&s1, &p1));
     }
@@ -216,7 +218,7 @@ mod tests {
             number: 467,
             width: 3,
             row: 1,
-            column: 0,
+            column: 1,
         };
         assert!(is_next_to_symbol(&s1, &p1));
     }
@@ -227,8 +229,8 @@ mod tests {
         let p1 = PartNumber {
             number: 467,
             width: 3,
-            row: 1,
-            column: 0,
+            row: 0,
+            column: 1,
         };
         assert!(is_next_to_symbol(&s1, &p1));
     }
@@ -239,8 +241,8 @@ mod tests {
         let p1 = PartNumber {
             number: 467,
             width: 3,
-            row: 1,
-            column: 0,
+            row: 0,
+            column: 1,
         };
         assert!(is_next_to_symbol(&s1, &p1));
     }
@@ -260,6 +262,33 @@ mod tests {
             column: 6,
         };
         assert!(is_next_to_symbol(&s1, &pn));
+    }
+
+    #[test]
+    fn test_is_next_to_symbol_not_included() {
+        let s1 = vec!["......29..".to_string(), ".........*".to_string()];
+        let p1 = PartNumber {
+            number: 29,
+            width: 2,
+            row: 0,
+            column: 6,
+        };
+        assert!(!is_next_to_symbol(&s1, &p1));
+    }
+
+    #[test]
+    fn test_is_next_to_symbol_not_included2() {
+        let s1 = vec![
+            String::from("..........................*..889*....89............675..........%.......29..427...................508..&........&...641..................455"),
+            String::from("..........897...960......403.....971...*......806.....@.363................*......9+..............*.....464...................586....282*..."),
+        ];
+        let p1 = PartNumber {
+            number: 29,
+            width: 2,
+            row: 0,
+            column: 72,
+        };
+        assert!(!is_next_to_symbol(&s1, &p1));
     }
 
     #[test]
@@ -322,8 +351,7 @@ mod tests {
             String::from("..........................*..889*....89............675..........%.......29..427...................508..&........&...641..................455"),
             String::from("..........897...960......403.....971...*......806.....@.363................*......9+..............*.....464...................586....282*..."),
         ];
-        let expect = 5201;
+        let expect = 5172;
         assert_eq!(sum_partnumber(&exa).unwrap(), expect);
     }
-
 }

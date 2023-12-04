@@ -8,13 +8,13 @@
             "type": "lldb",
             "request": "launch",
             "name": "Cargo test",
-            "cwd": "${workspaceFolder}/day-03",
+            "cwd": "${workspaceFolder}",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin",
-                    "part1",
+                    "--bin=part1",
+                    "--package=day-03"
                 ]
             },
             "args": []
@@ -23,12 +23,12 @@
             "type": "lldb",
             "request": "launch",
             "name": "Cargo run",
-            "cwd": "${workspaceFolder}/day-01",
+            "cwd": "${workspaceFolder}",
             "cargo": {
                 "args": [
                     "run",
-                    "--bin",
-                    "part2",
+                    "--bin=part1",
+                    "--package=day-03"
                 ]
             },
             "args": []
