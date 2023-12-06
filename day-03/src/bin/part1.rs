@@ -10,7 +10,7 @@ struct PartNumber {
     column: u32,
 }
 
-fn parse_part_number(character_map: &Vec<String>) -> Result<Vec<PartNumber>, Error> {
+fn parse_part_number(character_map: &[String]) -> Result<Vec<PartNumber>, Error> {
     let mut result = Vec::new();
     let mut parse_number = false;
     let mut start = 0;
@@ -18,30 +18,28 @@ fn parse_part_number(character_map: &Vec<String>) -> Result<Vec<PartNumber>, Err
 
     for (n, line) in character_map.iter().enumerate() {
         for (col, c) in line.chars().enumerate() {
-            if c.is_digit(10) {
+            if c.is_ascii_digit() {
                 if !parse_number {
                     start = col;
                     parse_number = true;
                 }
-            } else {
-                if parse_number {
-                    end = col;
-                    let number = line[start..end].parse::<u32>()?;
-                    result.push(PartNumber {
-                        number: number,
-                        width: end as u32 - start as u32,
-                        row: n as u32,
-                        column: start as u32,
-                    });
-                    parse_number = false;
-                }
+            } else if parse_number {
+                end = col;
+                let partnum = line[start..end].parse::<u32>()?;
+                result.push(PartNumber {
+                    number: partnum,
+                    width: end as u32 - start as u32,
+                    row: n as u32,
+                    column: start as u32,
+                });
+                parse_number = false;
             }
         }
         if parse_number {
             end = line.len();
-            let number = line[start..end].parse::<u32>()?;
+            let partnum = line[start..end].parse::<u32>()?;
             result.push(PartNumber {
-                number: number,
+                number: partnum,
                 width: end as u32 - start as u32,
                 row: n as u32,
                 column: start as u32,
@@ -53,7 +51,7 @@ fn parse_part_number(character_map: &Vec<String>) -> Result<Vec<PartNumber>, Err
 }
 
 fn is_symbol(c: char) -> bool {
-    c != '.' && !c.is_digit(10)
+    c != '.' && !c.is_ascii_digit()
 }
 
 fn is_next_to_symbol(character_map: &Vec<String>, part_number: &PartNumber) -> bool {
@@ -73,8 +71,7 @@ fn is_next_to_symbol(character_map: &Vec<String>, part_number: &PartNumber) -> b
     } else {
         part_number.row + 2
     };
-    let endcol = if part_number.column + part_number.width + 1 >= character_map[0].len() as u32
-    {
+    let endcol = if part_number.column + part_number.width + 1 >= character_map[0].len() as u32 {
         character_map[0].len() as u32
     } else {
         part_number.column + part_number.width + 1
@@ -341,7 +338,7 @@ mod tests {
             "...$.*....",
             ".664.598..",
         ];
-        let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();        
+        let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();
         let expect = 4361;
         assert_eq!(sum_partnumber(&exa).unwrap(), expect);
     }
@@ -352,11 +349,10 @@ mod tests {
             "..........................*..889*....89............675..........%.......29..427...................508..&........&...641..................455",
             "..........897...960......403.....971...*......806.....@.363................*......9+..............*.....464...................586....282*...",
         ];
-        let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();        
+        let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();
         let expect = 5172;
         assert_eq!(sum_partnumber(&exa).unwrap(), expect);
     }
-
 
     #[test]
     fn test_sum_possible_overcount() {
@@ -365,12 +361,10 @@ mod tests {
             "...............168........*........*...*....326...............*...............*...+..............413.*.....+293.769*620....674..............",
             "647.................949..........502...748..............692...208.......271..903..................=..132.........................506$..832..",
         ];
-        let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();        
+        let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();
         let expect = 6867;
         assert_eq!(sum_partnumber(&exa).unwrap(), expect);
     }
-
-
 
     #[test]
     fn test_addl_ex1() {
@@ -386,7 +380,7 @@ mod tests {
             "............",
             "2.2......12.",
             ".*.........*",
-            "1.1.......56",          
+            "1.1.......56",
         ];
         let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();
         let expect = 413;
@@ -416,10 +410,7 @@ mod tests {
 
     #[test]
     fn test_add2() {
-        let exa = vec![
-            ".*1",
-            "1..",
-        ];
+        let exa = vec![".*1", "1.."];
         let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();
         let expect = 2;
         assert_eq!(sum_partnumber(&exa).unwrap(), expect);
