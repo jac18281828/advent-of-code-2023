@@ -16,6 +16,7 @@ I'm using the basic setup as described in [How to set up Rust for Advent of Code
 # day-03
 # incorrect try 1-5
 1. input answer 438353
-2. input answer 551221
-3. fixed bug 545251
+- input answer 551221
+- fixed bug 545251
+- bug was scanning too many rows 3 instead of -1 to +1
 - correct answer is 536202 

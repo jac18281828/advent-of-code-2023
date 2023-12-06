@@ -68,10 +68,10 @@ fn is_next_to_symbol(character_map: &Vec<String>, part_number: &PartNumber) -> b
     } else {
         part_number.column - 1
     };
-    let endrow = if part_number.row + 3 > character_map.len() as u32 {
+    let endrow = if part_number.row + 2 > character_map.len() as u32 {
         character_map.len() as u32
     } else {
-        part_number.row + 3
+        part_number.row + 2
     };
     let endcol = if part_number.column + part_number.width + 1 >= character_map[0].len() as u32
     {
@@ -123,7 +123,7 @@ fn sum_partnumber(character_map: &Vec<String>) -> Result<u32, Error> {
 
 fn main() -> Result<(), Error> {
     tracing_subscriber::fmt()
-        .with_max_level(Level::INFO)
+        .with_max_level(Level::DEBUG)
         .init();
     let character_map: Vec<String> = io::stdin()
         .lines()
@@ -356,6 +356,21 @@ mod tests {
         let expect = 5172;
         assert_eq!(sum_partnumber(&exa).unwrap(), expect);
     }
+
+
+    #[test]
+    fn test_sum_possible_overcount() {
+        let exa = vec![
+            ".....984...+......&..618.39.493.289..21....*....379.600...........16.642..162....256........................................*....403........",
+            "...............168........*........*...*....326...............*...............*...+..............413.*.....+293.769*620....674..............",
+            "647.................949..........502...748..............692...208.......271..903..................=..132.........................506$..832..",
+        ];
+        let exa = exa.iter().map(|s| s.to_string()).collect::<Vec<String>>();        
+        let expect = 6867;
+        assert_eq!(sum_partnumber(&exa).unwrap(), expect);
+    }
+
+
 
     #[test]
     fn test_addl_ex1() {
