@@ -20,3 +20,6 @@ I'm using the basic setup as described in [How to set up Rust for Advent of Code
 - fixed bug 545251
 - bug was scanning too many rows 3 instead of -1 to +1
 - correct answer is 536202 
+
+# day-04
+1 input answer 15205

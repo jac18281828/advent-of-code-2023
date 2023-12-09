@@ -3,7 +3,7 @@ use std::io;
 use tracing::Level;
 
 #[derive(Debug, PartialEq)]
-struct PartNumber {
+pub struct PartNumber {
     number: u32,
     width: u32,
     row: u32,

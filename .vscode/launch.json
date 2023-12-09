@@ -14,7 +14,7 @@
                     "test",
                     "--no-run",
                     "--bin=part1",
-                    "--package=day-03"
+                    "--package=day-04"
                 ]
             },
             "args": []
@@ -27,7 +27,7 @@
             "cargo": {
                 "args": [
                     "run",
-                    "--bin=part1",
+                    "--bin=part2",
                     "--package=day-03"
                 ]
             },

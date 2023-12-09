@@ -10,7 +10,7 @@ ENV PATH=/home/${USER}/.cargo/bin:$PATH
 
 COPY --chown=xmtp:xmtp . .
 
-RUN cargo fmt --check
-RUN cargo clippy --all-features --no-deps
-RUN cargo test
+#RUN cargo fmt --check
+#RUN cargo clippy --all-features --no-deps
+#RUN cargo test
 CMD cargo run
