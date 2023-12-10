@@ -14,7 +14,7 @@
                     "test",
                     "--no-run",
                     "--bin=part1",
-                    "--package=day-04"
+                    "--package=day-05"
                 ]
             },
             "args": []

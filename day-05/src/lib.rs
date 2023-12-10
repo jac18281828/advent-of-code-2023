@@ -14,13 +14,15 @@ impl RangeMap {
     }
 
     pub fn map(&self, source: usize) -> usize {
-        if source < self.source_start {
-            source
-        } else if source >= self.source_start + self.range_width {
+        if source < self.source_start || source >= self.source_start + self.range_width {
             source
         } else {
             source - self.source_start + self.destination_start
         }
+    }
+
+    pub fn is_in_range(&self, source: usize) -> bool {
+        source >= self.source_start && source < self.source_start + self.range_width
     }
 }
 
@@ -80,5 +82,15 @@ mod tests {
         for i in 50..98 {
             assert_eq!(range_map.map(i), i + 2);
         }
+    }
+
+    #[test]
+    fn test_is_in_range() {
+        let range_map = RangeMap::new(50, 52, 2);
+        assert_eq!(range_map.is_in_range(49), false);
+        assert_eq!(range_map.is_in_range(50), true);
+        assert_eq!(range_map.is_in_range(51), true);
+        assert_eq!(range_map.is_in_range(52), false);
+        assert_eq!(range_map.is_in_range(53), false);
     }
 }

@@ -5,8 +5,8 @@ use tracing::Level;
 fn decode_winner(input: &[String]) -> Result<usize, Error> {
     let mut points = 0;
     for line in input {
-        let mut parts = line.split(":").last().unwrap().split("|");
-        let winners = parts.next().unwrap().trim().split(" ");
+        let mut parts = line.split(':').last().unwrap().split('|');
+        let winners = parts.next().unwrap().trim().split(' ');
         let mut winner_set = HashSet::new();
         for winner in winners {
             let winner = winner.trim();
@@ -16,7 +16,7 @@ fn decode_winner(input: &[String]) -> Result<usize, Error> {
             let winner = winner.parse::<usize>()?;
             winner_set.insert(winner);
         }
-        let cards = parts.next().unwrap().trim().split(" ");
+        let cards = parts.next().unwrap().trim().split(' ');
         let mut tally = 0;
         for card_num in cards {
             let card_num = card_num.trim();
