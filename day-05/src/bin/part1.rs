@@ -1,7 +1,21 @@
 use anyhow::Error;
 use lyn::Scanner;
-use std::collections::HashMap;
+use std::{collections::HashMap, io::Read};
 use tracing::Level;
+
+use clap::Parser;
+
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(
+        short = 'f',
+        long = "input",
+        help = "Input file to use, stdin if not present",
+        default_value = "-"
+    )]
+    file: String,
+}
 
 #[derive(Debug, PartialEq)]
 enum Token {
@@ -195,22 +209,19 @@ impl AlmanacParser {
     }
 }
 
-fn main() -> Result<(), Error> {
-    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
-    let alminac_data = std::io::stdin()
-        .lines()
-        .map(|l| l.unwrap())
-        .collect::<String>();
-    let mut parser = AlmanacParser::new(alminac_data.as_str());
+fn parse_data(input: &str) -> Result<u32, Error> {
+    let mut parser = AlmanacParser::new(input);
     parser.parse();
     let mut least_location = u32::MAX;
-    let mut last_value = usize::MAX;
-    let last_map = "-seed";
+    let mut last_map = "-seed";
+    let mut last_value = 0;
     for seed in parser.seeds.iter() {
         last_value = *seed as usize;
         for map_name in parser.map_list.iter() {
             let map_from = last_map.split('-').last().unwrap();
-            let map_to = map_name.split('-').next().unwrap();
+            let mut map_split = map_name.split('-');
+            let map_to = map_split.next().unwrap();
+            last_map = map_split.last().unwrap();
             if map_from != map_to {
                 tracing::error!("expected map for {} found {}", last_map, map_name);
                 break;
@@ -237,6 +248,28 @@ fn main() -> Result<(), Error> {
     } else {
         println!("least location: {}", least_location);
     }
+    Ok(least_location)
+}
+
+fn main() -> Result<(), Error> {
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
+    let matches = Args::parse();
+    let mut buf = String::new();
+    if matches.file == "-" {
+        tracing::info!("reading from stdin");
+        let data_read = std::io::stdin().read_to_string(&mut buf)?;
+        if data_read > 0 {
+            tracing::info!("read {} bytes from stdin", data_read);
+        } else {
+            tracing::error!("error reading from stdin");
+            return Err(anyhow::anyhow!("error reading from stdin"));
+        }
+    } else {
+        tracing::info!("reading from file: {}", matches.file);
+        let alminac_data = std::fs::read_to_string(matches.file)?;
+        buf.push_str(&alminac_data);
+    }
+    parse_data(&buf)?;
     Ok(())
 }
 
