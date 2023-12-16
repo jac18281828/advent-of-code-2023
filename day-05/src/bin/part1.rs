@@ -64,12 +64,8 @@ impl AlmanacParser {
                 }
                 Token::Map { name } => {
                     self.map_list.push(name.clone());
-                    while let token = self.parse_array() {
-                        if token.is_none() {
-                            tracing::error!("Input truncated");
-                            break;
-                        }
-                        match token.unwrap() {
+                    while let Some(token) = self.parse_array() {
+                        match token {
                             Token::Array { n } => {
                                 let range_map = day_05::RangeMap::new(
                                     n[1] as usize,
@@ -153,7 +149,7 @@ impl AlmanacParser {
         } else if token == "seeds" {
             Some(Token::Seeds)
         } else if token == "map" {
-            Some(Token::Map { name: name })
+            Some(Token::Map { name })
         } else {
             None
         }
@@ -213,33 +209,32 @@ fn parse_data(input: &str) -> Result<u32, Error> {
     let mut parser = AlmanacParser::new(input);
     parser.parse();
     let mut least_location = u32::MAX;
-    let mut last_map = "-seed";
-    let mut last_value = 0;
     for seed in parser.seeds.iter() {
-        last_value = *seed as usize;
+        let mut last_map = "-seed";
+        let mut last_value = *seed;
         for map_name in parser.map_list.iter() {
-            let map_from = last_map.split('-').last().unwrap();
-            let mut map_split = map_name.split('-');
-            let map_to = map_split.next().unwrap();
-            last_map = map_split.last().unwrap();
-            if map_from != map_to {
+            tracing::debug!("map_name: {}", map_name);
+            let _map_from = map_from(map_name);
+            tracing::debug!("{}: {}", _map_from, last_value);
+            let _map_to = map_to(map_name);
+            if _map_from != map_to(last_map) {
                 tracing::error!("expected map for {} found {}", last_map, map_name);
                 break;
             }
             let map = parser.map_table.get(map_name).unwrap();
             for range_map in map.iter() {
-                if range_map.is_in_range(last_value) {
-                    last_value = range_map.map(last_value);
+                if range_map.is_in_range(last_value as usize) {
+                    last_value = range_map.map(last_value as usize) as u32;
                     break;
                 } else {
                     continue;
                 }
             }
+            tracing::info!("map_to: {}, {}", _map_to, last_value);
+            last_map = map_name;
         }
-        if last_map.ends_with("location") {
-            if last_value < least_location as usize {
-                least_location = last_value as u32;
-            }
+        if last_map.ends_with("location") && last_value < least_location {
+            least_location = last_value;
         }
     }
     if least_location == u32::MAX {
@@ -251,8 +246,18 @@ fn parse_data(input: &str) -> Result<u32, Error> {
     Ok(least_location)
 }
 
+fn map_from(map_name: &str) -> &str {
+    map_name.split('-').next().unwrap()
+}
+
+fn map_to(map_name: &str) -> &str {
+    map_name.split('-').last().unwrap()
+}
+
 fn main() -> Result<(), Error> {
-    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
+    tracing_subscriber::fmt()
+        .with_max_level(Level::INFO)
+        .init();
     let matches = Args::parse();
     let mut buf = String::new();
     if matches.file == "-" {
@@ -343,6 +348,38 @@ mod tests {
             n: vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
         });
         let actual = parser.parse_array();
+        assert_eq!(actual, expect);
+    }
+
+    #[test]
+    fn test_map_to() {
+        let map_name = "seed-to-soil".to_string();
+        let expect = "soil";
+        let actual = map_to(&map_name);
+        assert_eq!(actual, expect);
+    }
+
+    #[test]
+    fn test_map_to_1() {
+        let map_name = "-soil".to_string();
+        let expect = "soil";
+        let actual = map_to(&map_name);
+        assert_eq!(actual, expect);
+    }
+
+    #[test]
+    fn test_map_from() {
+        let map_name = "seed-to-soil".to_string();
+        let expect = "seed";
+        let actual = map_from(&map_name);
+        assert_eq!(actual, expect);
+    }
+
+    #[test]
+    fn test_map_from_1() {
+        let map_name = "seed".to_string();
+        let expect = "seed";
+        let actual = map_from(&map_name);
         assert_eq!(actual, expect);
     }
 
