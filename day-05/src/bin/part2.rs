@@ -9,7 +9,7 @@ use tracing::Level;
     author,
     version,
     about,
-    long_about = "Advent of Code 2023, Day 5 Part 1"
+    long_about = "Advent of Code 2023, Day 5 Part 2"
 )]
 struct Args {
     #[arg(
@@ -25,32 +25,41 @@ fn parse_data(input: &str) -> Result<u64, Error> {
     let mut parser = day_05::AlmanacParser::new(input);
     parser.parse();
     let mut least_location = u64::MAX;
-    for seed in parser.seeds.iter() {
-        let mut last_map = "-seed";
-        let mut last_value = *seed;
-        for map_name in parser.map_list.iter() {
-            tracing::debug!("map_name: {}", map_name);
-            let map_from = day_05::map_from(map_name);
-            tracing::debug!("{}: {}", map_from, last_value);
-            let map_to = day_05::map_to(map_name);
-            if map_from != day_05::map_to(last_map) {
-                tracing::error!("expected map for {} found {}", last_map, map_name);
-                break;
-            }
-            let map = parser.map_table.get(map_name).unwrap();
-            for range_map in map.iter() {
-                if range_map.is_in_range(last_value as usize) {
-                    last_value = range_map.map(last_value as usize) as u64;
-                    break;
-                } else {
-                    continue;
-                }
-            }
-            tracing::debug!("map_to: {}, {}", map_to, last_value);
-            last_map = map_name;
+    let mut even = 1;
+    for seed_range in parser.seeds.windows(2) {
+        if even % 2 == 0 {
+            continue;
         }
-        if last_map.ends_with("location") && last_value < least_location {
-            least_location = last_value;
+        even += 1;
+        let (seed_start, seed_range) = (seed_range[0], seed_range[1]);
+        for seed in seed_start..seed_start + seed_range {
+            tracing::debug!("seed: {}", seed);
+            let mut last_map = "-seed";
+            let mut last_value = seed;
+            for map_name in parser.map_list.iter() {
+                tracing::debug!("map_name: {}", map_name);
+                let map_from = day_05::map_from(map_name);
+                tracing::debug!("{}: {}", map_from, last_value);
+                let map_to = day_05::map_to(map_name);
+                if map_from != day_05::map_to(last_map) {
+                    tracing::error!("expected map for {} found {}", last_map, map_name);
+                    break;
+                }
+                let map = parser.map_table.get(map_name).unwrap();
+                for range_map in map.iter() {
+                    if range_map.is_in_range(last_value as usize) {
+                        last_value = range_map.map(last_value as usize) as u64;
+                        break;
+                    } else {
+                        continue;
+                    }
+                }
+                tracing::debug!("map_to: {}, {}", map_to, last_value);
+                last_map = map_name;
+            }
+            if last_map.ends_with("location") && last_value < least_location {
+                least_location = last_value;
+            }
         }
     }
     if least_location == u64::MAX {

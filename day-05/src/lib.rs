@@ -6,13 +6,13 @@ use lyn::Scanner;
 enum Token {
     Seeds,
     Map { name: String },
-    Array { n: Vec<u32> },
+    Array { n: Vec<u64> },
     NewLine,
 }
 
 pub struct AlmanacParser {
     scanner: Scanner,
-    pub seeds: Vec<u32>,
+    pub seeds: Vec<u64>,
     pub map_list: Vec<String>,
     pub map_table: HashMap<String, Vec<RangeMap>>,
 }
@@ -148,14 +148,14 @@ impl AlmanacParser {
             match c.unwrap() {
                 '\r' | '\n' => {
                     if !nstr.is_empty() {
-                        n.push(nstr.parse::<u32>().unwrap());
+                        n.push(nstr.parse::<u64>().unwrap());
                         nstr = String::new();
                     }
                     break;
                 }
                 '\t' | ' ' => {
                     if !nstr.is_empty() {
-                        n.push(nstr.parse::<u32>().unwrap());
+                        n.push(nstr.parse::<u64>().unwrap());
                         nstr = String::new();
                     }
                     continue;
@@ -177,7 +177,7 @@ impl AlmanacParser {
             }
         }
         if !nstr.is_empty() {
-            n.push(nstr.parse::<u32>().unwrap());
+            n.push(nstr.parse::<u64>().unwrap());
         }
         if n.is_empty() {
             Some(Token::NewLine)

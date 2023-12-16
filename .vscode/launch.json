@@ -22,13 +22,13 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Cargo day-05-part1",
+            "name": "Cargo day-05-part2",
             "cwd": "${workspaceFolder}",
             "cargo": {
                 "args": [
                     "build",
                     "--package=day-05",
-                    "--bin=part1",
+                    "--bin=part2",
                 ]
             },
             "args": [
