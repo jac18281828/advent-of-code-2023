@@ -27,5 +27,5 @@ I'm using the basic setup as described in [How to set up Rust for Advent of Code
 # day-05
 1 input answer 196167384
 
-part2
- 
+ # day-06
+ 1 input answer is 138915
