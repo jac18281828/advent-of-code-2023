@@ -22,10 +22,11 @@ I'm using the basic setup as described in [How to set up Rust for Advent of Code
 - correct answer is 536202 
 
 # day-04
-1 input answer 15205
+1. input answer 15205
 
 # day-05
-1 input answer 196167384
+1. input answer 196167384
 
  # day-06
- 1 input answer is 138915
+ 1. input answer is 138915
+ 2. input2 answer is 27340847
