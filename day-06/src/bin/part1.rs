@@ -9,7 +9,7 @@ struct RaceTable {
     record_distance: usize,
 }
 
-fn parse_race_table(lines: &Vec<String>) -> Result<Vec<RaceTable>, Error> {
+fn parse_race_table(lines: &[String]) -> Result<Vec<RaceTable>, Error> {
     let mut max_time = Vec::<usize>::new();
     let mut record_distance = Vec::<usize>::new();
 
@@ -76,9 +76,7 @@ fn number_of_wins(max_time: usize, required_distance: usize) -> usize {
 }
 
 fn main() -> Result<(), Error> {
-    tracing_subscriber::fmt()
-        .with_max_level(Level::INFO)
-        .init();
+    tracing_subscriber::fmt().with_max_level(Level::INFO).init();
     let lines = io::stdin()
         .lines()
         .map(|line| line.unwrap().trim().to_string())
