@@ -30,3 +30,6 @@ I'm using the basic setup as described in [How to set up Rust for Advent of Code
  # day-06
  1. input answer is 138915
  2. input2 answer is 27340847
+
+ # day-07
+ 1. input answer is 246424613
