@@ -36,3 +36,4 @@ I'm using the basic setup as described in [How to set up Rust for Advent of Code
 
  # day-08
  1. input answer is 12643
+ 

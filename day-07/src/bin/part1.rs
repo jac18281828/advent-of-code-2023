@@ -4,7 +4,7 @@ use std::io;
 use anyhow::Error;
 use tracing::Level;
 
-#[derive(Debug, PartialEq, Eq, Clone, PartialOrd)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 struct Game {
     hand: String,
     bid: usize,
@@ -92,6 +92,12 @@ impl Ord for Game {
     }
 }
 
+impl PartialOrd for Game {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 fn is_card(c: char) -> bool {
     matches!(
         c,
@@ -170,20 +176,20 @@ fn parse_hand(line: &str) -> Result<Game, Error> {
     }
 }
 
-fn parse_game(lines: &Vec<String>) -> Vec<Game> {
+fn parse_game(lines: &[String]) -> Vec<Game> {
     lines
         .iter()
         .map(|l| parse_hand(l).unwrap())
         .collect::<Vec<Game>>()
 }
 
-fn rank_game(hand: &Vec<Game>) -> Vec<Game> {
-    let mut ranked = hand.clone();
-    ranked.sort_by(|a, b| a.cmp(b));
+fn rank_game(hand: &[Game]) -> Vec<Game> {
+    let mut ranked = hand.to_owned();
+    ranked.sort();
     ranked
 }
 
-fn total_winnings(hand: &Vec<Game>) -> usize {
+fn total_winnings(hand: &[Game]) -> usize {
     let mut total = 0;
     for (i, game) in hand.iter().enumerate() {
         total += game.bid * (i + 1);
