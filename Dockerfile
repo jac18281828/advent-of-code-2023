@@ -1,4 +1,4 @@
-FROM ghcr.io/jac18281828/rustdev:latest
+FROM ghcr.io/jac18281828/rust:latest
 
 ARG PROJECT=advent-of-code-2023
 WORKDIR /workspaces/${PROJECT}
